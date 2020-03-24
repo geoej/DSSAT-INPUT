@@ -4,8 +4,7 @@
 ###### application. Accept a CSV    #####################
 ###### file, ask user what are the  #####################
 ###### variables and generate DSSAT compaible files  ####
-###### and the make a continuous map#####################
-###### and post it on the GglemapAPI#####################
+###### Current version only generates weather file ######
 #########################################################
 
 library(shiny)
