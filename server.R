@@ -122,6 +122,7 @@ shinyServer(function(input, output, session){
 
     observeEvent(input$do, {
       
+      
       weather <- function(){
         ## sorting out the data
         
@@ -168,6 +169,11 @@ shinyServer(function(input, output, session){
                        input$WNDHT)
         
         txt2 = character()
+        
+        withProgress(message = 'Generating data', value = 0,{
+          # Number of times we'll go through the loop
+          n <- 10 
+          
         for (i in 1:nrow(wd)){
           txt2<-  
             append(txt2,
@@ -176,8 +182,11 @@ shinyServer(function(input, output, session){
                      as.character(sprintf("%6.1f%6.1f%6.1f%6.1f",wd[i,"Solar"],wd[i,"Tmax"],wd[i,"Tmin"],wd[i,"RF"]))
                    ,sep="")
             )
+          incProgress(1/n, detail = paste("Row number", i))
+          # Pause for 0.1 seconds to simulate a long computation.
+          #Sys.sleep(0.1)
         }
-        
+        })
         # for (i in 1:nrow(wd)){
         #   txt2<-  append(txt2,paste(paste0(do.call(paste0,as.list(strsplit(as.character(wd[i,"Year"]),"")[[1]][3:4])), as.character(sprintf("%03d", wd[i,"DOY"]))),
         #                             sprintf("%4.1f",wd[i,"Solar"]), 
