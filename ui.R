@@ -22,7 +22,7 @@ shinyUI(
     br(), 
     br(),
     br(),
-    h6("            2020, Ebrahim Jahanshiri")
+    h6("            version 5th April 2020, Ebrahim Jahanshiri")
           ),
   mainPanel(
     useShinyjs(),
