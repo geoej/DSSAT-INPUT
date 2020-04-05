@@ -18,7 +18,7 @@ shinyUI(
           fileInput('dat', 'Choose data File',
                     accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')),
           #),
-    
+    h6("First 6 rows of data will be shown below"),
     br(), 
     br(),
     br(),
@@ -65,5 +65,6 @@ shinyUI(
       "false", # always hide the download button
       downloadButton("downloadData", "Download")
     ),
-    actionButton("do", "Generate")
+    actionButton("do", "Generate"), 
+    tableOutput('table')
                 )))

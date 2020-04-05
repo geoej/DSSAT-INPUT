@@ -78,12 +78,7 @@ shinyServer(function(input, output, session){
     return(NULL)
   read.csv(dat$datapath) # removed unneccesary arguments, header=input$header, sep=input$sep, quote=input$quote
   })
-  # grid <- reactive({
-  #   grd <- input$grd
-  #   if (is.null(grd))
-  #     return(NULL)
-  #   read.csv(grd$datapath)
-  # })
+  output$table <- renderTable(head(data()))
   
   output$selectUIdatYear <- renderUI({ 
     if (is.null(data())) return(NULL)
