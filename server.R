@@ -78,7 +78,7 @@ shinyServer(function(input, output, session){
     return(NULL)
   read.csv(dat$datapath) # removed unneccesary arguments, header=input$header, sep=input$sep, quote=input$quote
   })
-  output$table <- renderTable(head(data()))
+  output$table <- renderTable(head(data(), n=100))
   
   output$selectUIdatYear <- renderUI({ 
     if (is.null(data())) return(NULL)
