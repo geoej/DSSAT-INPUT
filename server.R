@@ -9,63 +9,66 @@
 
 library(shiny)
 library(sirad)
-#library(gstat)
+library(shinyjs)
 
-weather <- function(){
-  ## sorting out the data
-  
-  weather <- data()
-  #weather <- weather[complete.cases(weather),] # making sure we dont have NAs
-  wd <- data.frame(Year = data[[input$Year]],
-                   DOY = data[[input$DOY]],
-                   Tmax = data[[input$Tmax]],
-                   Tmin = data[[input$Tmin]],
-                   RF = data[[input$RF]],
-                   Solar = data[[input$Solar]]
-  )
-  
-  ## calculating the SRAD from SH
-  if ('sunshine checkbox is checked'){
-    # 'run the code for calculating the sunshine hours'
-    dat <- paste0(as.character(wd$Year), "-", sprintf("%03d",wd$DOY))
-    dat <- as.Date(dat, format = "%Y-%j")
-    
-    if ('the lat and long are outside the map'){
-      # 'run a simple regression for determining a and b'
-      wd$Solar <- ap(dat,as.numeric(LAT),
-                     as.numeric(LONG), extraT=NULL,A=NA,B=NA,wd$SH)
-      }
-  }
-  ## make 
-  # building the text file
-  
-  txt <- sprintf(paste0("*WEATHER DATA : MLSA\n",
-                        "\n@ INSI      LAT     LONG  ELEV   TAV   AMP REFHT WNDHT\n",
-                        "  %s    %3s  %3s   %1s  %1s  %1s %1s %1s\n",
-                        "@DATE  SRAD  TMAX  TMIN  RAIN"),INSI,      LAT,     LONG,  ELEV,   TAV,   AMP, REFHT, WNDHT)
-  
-  txt2 = character()
-  for (i in 1:nrow(wd)){
-    txt2<-  append(txt2,paste(paste0(do.call(paste0,as.list(strsplit(as.character(wd[i,"Year"]),"")[[1]][3:4])), as.character(sprintf("%03d", wd[i,"DOY"]))),
-                              sprintf("%4s",wd[i,"Solar"]), # if the data is sunshine hours, use wd[i,7]
-                              sprintf("%4s",wd[i,"Tmax"]),
-                              sprintf("%4s",wd[i,"Tmin"]),
-                              sprintf("%4s",wd[i,"RF"],"\n"), sep = "  "))
-  }
-  # writing the output
-  
-  # # Downloadable csv of selected dataset ----
-  # output$downloadData <- downloadHandler(
-  #   content = function(file) {
-  #     writeLines(c(txt,txt2), "outfile.WTH")
-  #   }
-  # )
-  
-  
-  message("running code...")
-  return("some output")
-  
-}
+# weather <- function(){
+#   ## sorting out the data
+#   
+#   weather <- data()
+#   #weather <- weather[complete.cases(weather),] # making sure we dont have NAs
+#   wd <- data.frame(Year = data[[input$Year]],
+#                    DOY = data[[input$DOY]],
+#                    Tmax = data[[input$Tmax]],
+#                    Tmin = data[[input$Tmin]],
+#                    RF = data[[input$RF]],
+#                    Solar = data[[input$Solar]]
+#   )
+#   
+#   ## calculating the SRAD from SH
+#   if ('sunshine checkbox is checked'){
+#     # 'run the code for calculating the sunshine hours'
+#     dat <- paste0(as.character(wd$Year), "-", sprintf("%03d",wd$DOY))
+#     dat <- as.Date(dat, format = "%Y-%j")
+#     
+#     if ('the lat and long are outside the map'){
+#       # 'run a simple regression for determining a and b'
+#       wd$Solar <- ap(dat,as.numeric(LAT),
+#                      as.numeric(LONG), extraT=NULL,A=NA,B=NA,wd$SH)
+#       }
+#   }
+#   ## make 
+#   # building the text file
+#   
+#   txt <- sprintf(paste0("*WEATHER DATA : MLSA\n",
+#                         "\n@ INSI      LAT     LONG  ELEV   TAV   AMP REFHT WNDHT\n",
+#                         "  %s    %3s  %3s   %1s  %1s  %1s %1s %1s\n",
+#                         "@DATE  SRAD  TMAX  TMIN  RAIN"),INSI,      LAT,     LONG,  ELEV,   TAV,   AMP, REFHT, WNDHT)
+#   
+#   txt2 = character()
+#   for (i in 1:nrow(wd)){
+#     txt2<-  append(txt2,paste(paste0(do.call(paste0,as.list(strsplit(as.character(wd[i,"Year"]),"")[[1]][3:4])), as.character(sprintf("%03d", wd[i,"DOY"]))),
+#                               sprintf("%4s",wd[i,"Solar"]), # if the data is sunshine hours, use wd[i,7]
+#                               sprintf("%4s",wd[i,"Tmax"]),
+#                               sprintf("%4s",wd[i,"Tmin"]),
+#                               sprintf("%4s",wd[i,"RF"],"\n"), sep = "  "))
+#   }
+#   # writing the output
+#   
+#   # # Downloadable csv of selected dataset ----
+#   # output$downloadData <- downloadHandler(
+#   #   content = function(file) {
+#   #     writeLines(c(txt,txt2), "outfile.WTH")
+#   #   }
+#   # )
+#   
+# 
+#    
+#   runjs("$('#downloadData')[0].click();")
+#   
+#   message("running code...")
+#   return("some output")
+#   
+# }
 
 shinyServer(function(input, output, session){
   
@@ -121,7 +124,7 @@ shinyServer(function(input, output, session){
   # core function
 
     vals <- reactiveValues()
-    
+
     observeEvent(input$do, {
       
       weather <- function(){
@@ -144,13 +147,13 @@ shinyServer(function(input, output, session){
           dat <- as.Date(dat, format = "%Y-%j")
           
           if (as.numeric(input$LAT) > 35){
-            # !!!! Needs to be revised
+            # This works only for EU
             wd$Solar <- ap(dat,as.numeric(input$LAT),
                            as.numeric(input$LONG), extraT=NULL,A=NA,B=NA,wd$Solar)
             
           }else {
-            wd$Solar <- ap(dat,as.numeric(input$LAT),
-                           as.numeric(inputLONG), extraT=NULL,A=0.2,B=0.3,wd$Solar)
+            wd$Solar <- ap(dat,as.numeric(input$LAT), # !!!! Needs to be asked from the user
+                           as.numeric(inputLONG), extraT=NULL,A=as.numeric(input$A),B=as.numeric(input$B),wd$Solar)
           }
         }
         ## make 
@@ -191,26 +194,33 @@ shinyServer(function(input, output, session){
         
         writeLines(txt)
         #writeLines(txt2)
-        # Downloadable csv of selected dataset ----
-        output$downloadData <- downloadHandler(
-          filename = function() {
-            paste(input$INSI, Sys.time(), ".WTH", sep="")
-          },
-          
-          content = function(file) {
-            writeLines(c(txt,txt2), file)
-          }
-        )
-        
-        
-        #message("running code...")
-
+        vals$final <- c(txt,txt2)
+         
+        message("running code...")
       }
+      
       vals$long_code_out <- weather()
+      runjs("$('#downloadData')[0].click();")
+      
       #showModal(modalDialog("calculation finished!"))
+      # Downloadable csv of selected dataset ----
+      
     })
 
-  
+    output$downloadData <- downloadHandler(
+      filename = function() {
+        paste(input$INSI, Sys.time(), ".WTH", sep="")
+      },
+      
+      content = function(file) {
+        #writeLines(c(txt,txt2), file)
+        writeLines(vals$final, file)
+        
+        message("reached here")
+      }
+    )
+    
+    
   
   
   
