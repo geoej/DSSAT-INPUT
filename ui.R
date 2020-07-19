@@ -28,10 +28,7 @@ shinyUI(
     useShinyjs(),
     
     tabsetPanel(
-      tabPanel("Weather"),
-      tabPanel("Soil"),
-      tabPanel("API") 
-        ), 
+      tabPanel("Weather", 
     column(3,
            h3("Select variables"),
     htmlOutput("selectUIdatYear"),
@@ -66,5 +63,8 @@ shinyUI(
       downloadButton("downloadData", "Download")
     ),
     actionButton("do", "Generate"), 
-    tableOutput('table')
+    tableOutput('table')),
+    tabPanel("Soil"),
+    tabPanel("API") 
+    )
                 )))
