@@ -213,7 +213,7 @@ shinyServer(function(input, output, session){
 
     output$downloadData <- downloadHandler(
       filename = function() {
-        paste(input$INSI, Sys.time(), ".WTH", sep="")
+        paste(input$INSI, "-", Sys.Date(), ".WTH", sep="")
       },
       
       content = function(file) {
